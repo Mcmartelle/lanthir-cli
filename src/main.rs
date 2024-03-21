@@ -5,10 +5,14 @@ extern crate pest_derive;
 use anyhow::{bail, Result};
 use clap::Parser as ClapParser;
 use log::info;
-// use pest::Parser as PestParser;
+use pest::Parser as PestParser;
 use simplelog::{ConfigBuilder, LevelFilter, WriteLogger};
-use std::fs::File;
+use std::fs;
 use std::path::PathBuf;
+
+#[derive(pest_derive::Parser)]
+#[grammar = "mermaid.pest"]
+pub struct MermaidParser;
 
 #[derive(clap::Parser)]
 #[command(author, version, about, long_about = None)]
@@ -41,10 +45,35 @@ fn main() -> Result<()> {
             },
         };
         let config = ConfigBuilder::new().set_time_format_rfc3339().build();
-        let _ = WriteLogger::init(LevelFilter::Info, config, File::create(log_dir).unwrap());
+        let _ = WriteLogger::init(
+            LevelFilter::Info,
+            config,
+            fs::File::create(log_dir).unwrap(),
+        );
     }
+
+    let flowchart_string = fs::read_to_string(args.input.unwrap())?;
+
+    let _flowchart_graph = parse_mermaid(&flowchart_string);
 
     info!("does this only appear in log file if simplelogger isn't initialzed?");
     println!("Hello, world!");
+    Ok(())
+}
+
+fn parse_mermaid(flowchart_string: &str) -> Result<()> {
+    let mermaid_parts = MermaidParser::parse(Rule::mmd, flowchart_string)
+        .expect("unsuccessful pest parse")
+        .next()
+        .unwrap();
+
+    for part in mermaid_parts.into_inner() {
+        match part.as_rule() {
+            Rule::line => println!("LINE: {:#?}", part),
+            Rule::header => println!("HEADER: {:#?}", part),
+            _ => println!("OTHER: {:#?}", part),
+        }
+    }
+
     Ok(())
 }
