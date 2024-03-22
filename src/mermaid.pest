@@ -4,8 +4,21 @@ node_id = @{ ASCII_ALPHANUMERIC+ }
 node_shape = { shape_open ~ node_text ~ shape_close }
 shape_open = {  "(((" | "((" | "([" | "{{" | "[[" | "[/" | "[\\" | "[(" | "[" | "(" | "{" }
 shape_close = { ")))" | "))" | "]]" | "}}" | "])" | ")]" | "\\]" | "/]" | "}" | ")" | "]" }
-node_text = { (ASCII_ALPHANUMERIC | WHITESPACE )+ }
-line = { node_id ~ node_shape? ~ NEWLINE }
+node_text = { spacey_text }
+spacey_text = _{ (ASCII_ALPHANUMERIC | WHITESPACE )+ }
+edge = { directed_edge | undirected_edge }
+directed_edge = { (directed_edge_textless  ~ edge_piped_text?) | (edge_open ~ edge_text? ~ directed_edge_close) }
+undirected_edge = { (undirected_edge_textless ~ edge_piped_text?) | (edge_open ~ edge_text? ~ undirected_edge_close) }
+edge_open = { "--" | "==" | "-." }
+directed_edge_textless = { "---->" | "--->" | "-->" | "====>" | "===>" | "==>" | "-...->" | "-..->" | "-.->" }
+undirected_edge_textless = { "-----" | "----" | "---" | "=====" | "====" | "===" | "-...-" | "-..-" | "-.-" }
+directed_edge_close = { "-->" | "==>" | ".->" }
+undirected_edge_close = { "---" | "===" | ".-" }
+edge_text = { spacey_text }
+edge_piped_text = { "|" ~ edge_text ~ "|" }
+node = { node_id ~ node_shape? }
+node_cluster = { node ~ ("&" ~ node)* }
+line = { node_cluster ~ (edge ~ node_cluster)* ~ NEWLINE }
 WHITESPACE = _{ " " }
 COMMENT = _{ "%%" ~ (!NEWLINE ~ ANY)* }
 mmd = { header ~ line+ }
