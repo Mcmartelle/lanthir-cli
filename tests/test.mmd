@@ -3,9 +3,7 @@ flowchart TD
     A-->B[["run[echo #quot;hello#quot;]"]]
     B-->C{Flip Coin}
     C--Heads-->D(You Win!)
-    D-->G
-    C--Tails-->E(You Lose)
-    E--->F
+    C--Tails-->E(You Lose)--->F
     F{Try Again?}--Yes-->C
-    F--->|No|G(End)
-
+    F & D--->|No|G(End)
+    
