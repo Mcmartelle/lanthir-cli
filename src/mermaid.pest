@@ -2,25 +2,25 @@ header = { "flowchart" ~ chart_direction ~ NEWLINE }
 chart_direction = _{ "TD" | "TB" | "LR" | "BT" | "RL" }
 node_id = @{ (ASCII_ALPHANUMERIC | "_" )+ }
 node_shape = { shape_open ~ (shell_cmd | node_text) ~ shape_close }
-shape_open = {  "(((" | "((" | "([" | "{{" | "[[" | "[/" | "[\\" | "[(" | "[" | "(" | "{" }
-shape_close = { ")))" | "))" | "]]" | "}}" | "])" | ")]" | "\\]" | "/]" | "}" | ")" | "]" }
+shape_open = _{  "(((" | "((" | "([" | "{{" | "[[" | "[/" | "[\\" | "[(" | "[" | "(" | "{" }
+shape_close = _{ ")))" | "))" | "]]" | "}}" | "])" | ")]" | "\\]" | "/]" | "}" | ")" | "]" }
 node_text = { unquoted_text }
 unquoted_text = _{ ( ASCII_ALPHANUMERIC | WHITESPACE | unquoted_symbol )+ }
-unquoted_symbol = { "," | "_" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "+" }
+unquoted_symbol = { "," | "_" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "+" | "?" }
 quoted_text = { "\"" ~ unquoted_text ~ "\"" }
 shell_cmd = { "\"run[" ~ shell_text ~ "]\"" }
 shell_text = { ( non_double_quote | double_quote )+ }
-non_double_quote = { (ASCII_ALPHANUMERIC | WHITESPACE | posix_symbol)+ }
+non_double_quote = @{ (ASCII_ALPHANUMERIC | WHITESPACE | posix_symbol)+ }
 posix_symbol = _{ "-" | "_" | "(" | ")" | "'" | "~" | "." | "/" | "\\" | "|" | "&" | ";" | "<" | ">" | "$" | "`" | "{" | "}" | "!" }
 double_quote = { "#quot;" }
 edge = { directed_edge | undirected_edge }
 directed_edge = { (directed_edge_textless  ~ edge_piped_text?) | (edge_open ~ edge_text? ~ directed_edge_close) }
 undirected_edge = { (undirected_edge_textless ~ edge_piped_text?) | (edge_open ~ edge_text? ~ undirected_edge_close) }
-edge_open = { "--" | "==" | "-." }
-directed_edge_textless = { "---->" | "--->" | "-->" | "====>" | "===>" | "==>" | "-...->" | "-..->" | "-.->" }
-undirected_edge_textless = { "-----" | "----" | "---" | "=====" | "====" | "===" | "-...-" | "-..-" | "-.-" }
-directed_edge_close = { "-->" | "==>" | ".->" }
-undirected_edge_close = { "---" | "===" | ".-" }
+edge_open = _{ "--" | "==" | "-." }
+directed_edge_textless = _{ "---->" | "--->" | "-->" | "====>" | "===>" | "==>" | "-...->" | "-..->" | "-.->" }
+undirected_edge_textless = _{ "-----" | "----" | "---" | "=====" | "====" | "===" | "-...-" | "-..-" | "-.-" }
+directed_edge_close = _{ "-->" | "==>" | ".->" }
+undirected_edge_close = _{ "---" | "===" | ".-" }
 edge_text = { unquoted_text }
 edge_piped_text = { "|" ~ edge_text ~ "|" }
 node = { node_id ~ node_shape? }

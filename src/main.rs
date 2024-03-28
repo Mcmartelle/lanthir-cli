@@ -67,12 +67,109 @@ fn parse_mermaid(flowchart_string: &str) -> Result<()> {
         .expect("unsuccessful pest parse")
         .next()
         .unwrap();
+    // let mut graph: HashMap<String, Node> = HashMap::new();
 
     for part in mermaid_parts.into_inner() {
         match part.as_rule() {
-            Rule::line => println!("LINE: {:#?}", part),
+            Rule::line => {
+                // println!("LINE: {:#?}", part);
+                println!("LINE");
+                for pair in part.into_inner() {
+                    match pair.as_rule() {
+                        Rule::node_cluster => {
+                            println!("> NODE CLUSTER");
+                            for node in pair.into_inner() {
+                                match node.as_rule() {
+                                    Rule::node => {
+                                        println!(">> NODE");
+                                        for node_attr in node.into_inner() {
+                                            match node_attr.as_rule() {
+                                                Rule::node_id => {
+                                                    println!(">>> NODE ID");
+                                                    println!("=== {}", node_attr.as_str());
+                                                },
+                                                Rule::node_shape => {
+                                                    println!(">>> NODE SHAPE");
+                                                    for node_content in node_attr.into_inner() {
+                                                        match node_content.as_rule() {
+                                                            Rule::node_text => {
+                                                                println!(">>>> NODE TEXT");
+                                                                println!("==== {}", node_content.as_str());
+                                                            },
+                                                            Rule::shell_cmd => {
+                                                                println!(">>>> SHELL CMD");
+                                                                for shell_command in node_content.into_inner() {
+                                                                    match shell_command.as_rule() {
+                                                                        Rule::shell_text => {
+                                                                            let mut command_string = String::new();
+                                                                            for slice in shell_command.into_inner() {
+                                                                                match slice.as_rule() {
+                                                                                    Rule::non_double_quote => command_string.push_str(slice.as_str()),
+                                                                                    Rule::double_quote => command_string.push('"'),
+                                                                                    _ => unreachable!(),
+                                                                                }
+                                                                            }
+                                                                            println!("==== {}", command_string)
+                                                                        },
+                                                                        _ => unreachable!(),
+                                                                    }
+                                                                }
+                                                            },
+                                                            _ => unreachable!(),
+                                                        }
+                                                    }
+                                                },
+                                                _ => unreachable!(),
+                                            }
+                                        }
+                                    },
+                                    _ => {
+                                        // println!("OTHER: {:#?}", node);
+                                        unreachable!()
+                                    },
+                                }
+                            }
+                        },
+                        Rule::edge => {
+                            println!("> EDGE");
+                            for edge in pair.into_inner() {
+                                match edge.as_rule() {
+                                    Rule::directed_edge => {
+                                        println!(">> DIRECTED EDGE");
+                                        for edge_part in edge.into_inner() {
+                                            match edge_part.as_rule() {
+                                                Rule::edge_piped_text => {
+                                                    for edge_text in edge_part.into_inner() {
+                                                        match edge_text.as_rule() {
+                                                            Rule::edge_text => {
+                                                                println!(">>> EDGE TEXT (piped)");
+                                                                println!("=== {}", edge_text.as_str());
+                                                            },
+                                                            _ => unreachable!(),
+                                                        }
+                                                    }
+                                                },
+                                                Rule::edge_text => {                                                    
+                                                    println!(">>> EDGE TEXT");
+                                                    println!("=== {}", edge_part.as_str());
+                                                }
+                                                _ => unreachable!(),
+                                            }
+                                        }
+                                    },
+                                    Rule::undirected_edge => {
+                                        println!(">> UNDIRECTED EDGE");
+                                    },
+                                    _ => unreachable!(),
+                                }
+                            }
+                        },
+                        _ => unreachable!(),
+                    }
+                }
+            },
             Rule::header => println!("HEADER: {:#?}", part),
-            _ => println!("OTHER: {:#?}", part),
+            _ => unreachable!(),
         }
     }
 
