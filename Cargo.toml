@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.81"
 clap = { version = "4.5.3", features = ["derive"] }
-dialoguer = "0.11.0"
+dialoguer = { version = "0.11.0", features = ["fuzzy-select"] }
 graph_builder = "0.4.0"
 home = "0.5.9"
 indicatif = "0.17.8"

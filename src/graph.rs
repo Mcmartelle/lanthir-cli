@@ -1,3 +1,4 @@
+use std::fmt;
 
 #[derive(Debug)]
 pub struct Node {
@@ -10,4 +11,13 @@ pub struct Node {
 pub struct Edge {
     pub destination: String,
     pub label: Option<String>,
+}
+
+impl fmt::Display for Edge {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self.label {
+            Some(x) => write!(f, "{} -> {}", x, &self.destination),
+            None => write!(f, "to {}", &self.destination),
+        }
+    }
 }

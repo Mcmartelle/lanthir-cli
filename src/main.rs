@@ -11,9 +11,11 @@ use simplelog::{ConfigBuilder, LevelFilter, WriteLogger};
 use std::fs;
 use std::path::PathBuf;
 use crate::mermaid::parse_mermaid;
+use crate::runner::{GraphMachine, Traverse};
 
 pub mod mermaid;
 pub mod graph;
+pub mod runner;
 
 #[derive(clap::Parser)]
 #[command(author, version, about, long_about = None)]
@@ -55,7 +57,11 @@ fn main() -> Result<()> {
 
     let flowchart_string = fs::read_to_string(args.input.unwrap())?;
 
-    let _flowchart_graph = parse_mermaid(&flowchart_string);
+    let flowchart_graph = parse_mermaid(&flowchart_string)?;
+
+    let mut flowchart_runner = GraphMachine::new(String::from("Start"), flowchart_graph);
+
+    flowchart_runner.run()?;
 
     info!("does this only appear in log file if simplelogger isn't initialzed?");
     println!("Hello, world!");
