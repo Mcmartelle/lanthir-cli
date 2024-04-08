@@ -19,8 +19,8 @@ pub trait Traverse {
 impl GraphMachine {
     pub fn new(current_node: String, graph: HashMap<String, Node>) -> GraphMachine {
         GraphMachine {
-            current_node: current_node,
-            graph: graph,
+            current_node,
+            graph,
         }
     }
 }
@@ -34,7 +34,7 @@ impl Traverse for GraphMachine {
                         0 => {
                             println!("no choices");
                             break;
-                        },
+                        }
                         1 => {
                             let prompt = match self.get_node_label() {
                                 Some(x) => x,
@@ -54,8 +54,8 @@ impl Traverse for GraphMachine {
                                 println!("exiting flowchart");
                                 break;
                             }
-                        },
-                        _ => {                            
+                        }
+                        _ => {
                             // use fuzzy select
                             let prompt = match self.get_node_label() {
                                 Some(x) => x,
@@ -87,7 +87,7 @@ impl Traverse for GraphMachine {
         };
         let choices = match edges.len() {
             0 => return None,
-            _ => edges
+            _ => edges,
         };
         Some(choices)
     }

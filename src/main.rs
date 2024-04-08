@@ -2,6 +2,8 @@ extern crate pest;
 //#[macro_use]
 extern crate pest_derive;
 
+use crate::mermaid::parse_mermaid;
+use crate::runner::{GraphMachine, Traverse};
 use anyhow::{bail, Result};
 use clap::Parser as ClapParser;
 use log::info;
@@ -10,11 +12,9 @@ use pest::Parser as PestParser;
 use simplelog::{ConfigBuilder, LevelFilter, WriteLogger};
 use std::fs;
 use std::path::PathBuf;
-use crate::mermaid::parse_mermaid;
-use crate::runner::{GraphMachine, Traverse};
 
-pub mod mermaid;
 pub mod graph;
+pub mod mermaid;
 pub mod runner;
 
 #[derive(clap::Parser)]
@@ -63,8 +63,6 @@ fn main() -> Result<()> {
 
     flowchart_runner.run()?;
 
-    info!("does this only appear in log file if simplelogger isn't initialzed?");
-    println!("Hello, world!");
+    info!("logging to the logging file");
     Ok(())
 }
-

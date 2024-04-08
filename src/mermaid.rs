@@ -1,7 +1,7 @@
-use anyhow::Result;
-use std::collections::HashMap;
-use pest::Parser as PestParser;
 use crate::graph::{Edge, Node};
+use anyhow::Result;
+use pest::Parser as PestParser;
+use std::collections::HashMap;
 
 #[derive(pest_derive::Parser)]
 #[grammar = "mermaid.pest"]
@@ -23,19 +23,16 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                 // let mut node_index: u8 = 0;
                 // let mut edge_index: u8 = 0;
                 // Line;
-                println!("LINE");
                 for pair in part.into_inner() {
                     match pair.as_rule() {
                         Rule::node_cluster => {
                             // Node Cluster
-                            println!("> NODE CLUSTER");
                             let mut cluster_nodes: Vec<(String, Option<String>, Option<String>)> =
                                 Vec::new();
                             for node in pair.into_inner() {
                                 match node.as_rule() {
                                     Rule::node => {
                                         // Node
-                                        println!(">> NODE");
                                         let mut node_id: String = String::new();
                                         let mut node_text: Option<String> = None;
                                         let mut node_cmd: Option<String> = None;
@@ -43,28 +40,19 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                             match node_attr.as_rule() {
                                                 Rule::node_id => {
                                                     // Node ID
-                                                    println!(">>> NODE ID");
-                                                    println!("=== {}", node_attr.as_str());
                                                     node_id = String::from(node_attr.as_str());
                                                 }
                                                 Rule::node_shape => {
-                                                    println!(">>> NODE SHAPE");
                                                     for node_content in node_attr.into_inner() {
                                                         match node_content.as_rule() {
                                                             Rule::node_text => {
                                                                 // Node Text
-                                                                println!(">>>> NODE TEXT");
-                                                                println!(
-                                                                    "==== {}",
-                                                                    node_content.as_str()
-                                                                );
                                                                 node_text = Some(String::from(
                                                                     node_content.as_str(),
                                                                 ));
                                                             }
                                                             Rule::shell_cmd => {
                                                                 // Shell CMD
-                                                                println!(">>>> SHELL CMD");
                                                                 for shell_command in
                                                                     node_content.into_inner()
                                                                 {
@@ -82,10 +70,6 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                                                                     _ => unreachable!(),
                                                                                 }
                                                                             }
-                                                                            println!(
-                                                                                "==== {}",
-                                                                                command_string
-                                                                            );
                                                                             node_cmd = Some(
                                                                                 command_string,
                                                                             );
@@ -104,7 +88,6 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                         cluster_nodes.push((node_id, node_text, node_cmd));
                                     }
                                     _ => {
-                                        // println!("OTHER: {:#?}", node);
                                         unreachable!()
                                     }
                                 }
@@ -112,13 +95,11 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                             line_node_clusters.push(cluster_nodes);
                         }
                         Rule::edge => {
-                            println!("> EDGE");
                             let mut line_edge: Option<String> = None;
                             let mut edge_is_directed = false;
                             for edge in pair.into_inner() {
                                 match edge.as_rule() {
                                     Rule::directed_edge => {
-                                        println!(">> DIRECTED EDGE");
                                         edge_is_directed = true;
                                         for edge_part in edge.into_inner() {
                                             match edge_part.as_rule() {
@@ -126,11 +107,6 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                                     for edge_text in edge_part.into_inner() {
                                                         match edge_text.as_rule() {
                                                             Rule::edge_text => {
-                                                                println!(">>> EDGE TEXT (piped)");
-                                                                println!(
-                                                                    "=== {}",
-                                                                    edge_text.as_str()
-                                                                );
                                                                 line_edge = Some(String::from(
                                                                     edge_text.as_str(),
                                                                 ));
@@ -140,8 +116,6 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                                     }
                                                 }
                                                 Rule::edge_text => {
-                                                    println!(">>> EDGE TEXT");
-                                                    println!("=== {}", edge_part.as_str());
                                                     line_edge =
                                                         Some(String::from(edge_part.as_str()));
                                                 }
@@ -150,7 +124,6 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                         }
                                     }
                                     Rule::undirected_edge => {
-                                        println!(">> UNDIRECTED EDGE");
                                         edge_is_directed = false;
                                     }
                                     _ => unreachable!(),
@@ -162,8 +135,8 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                     }
                 }
                 // Process line data into graph here
-                println!("line_node_clusters: {:#?}", line_node_clusters);
-                println!("line_edges: {:#?}", line_edges);
+                // println!("line_node_clusters: {:#?}", line_node_clusters);
+                // println!("line_edges: {:#?}", line_edges);
                 assert_eq!(line_node_clusters.len(), line_edges.len() + 1);
                 for index in 0..line_edges.len() {
                     if line_edges[index].0 {
@@ -199,11 +172,8 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                         }
                     }
                 }
-                for (key, val) in graph.iter() {
-                    println!("key: {} val: {:#?}", key, val);
-                }
             }
-            Rule::header => println!("HEADER: {:#?}", part),
+            Rule::header => {}
             _ => unreachable!(),
         }
     }
