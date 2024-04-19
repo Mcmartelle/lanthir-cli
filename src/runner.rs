@@ -1,6 +1,7 @@
 use crate::graph::{Edge, Node};
 use anyhow::Result;
 use dialoguer::{theme::ColorfulTheme, Confirm, FuzzySelect};
+use log::info;
 use std::collections::HashMap;
 
 pub struct GraphMachine {
@@ -27,11 +28,13 @@ impl GraphMachine {
 
 impl Traverse for GraphMachine {
     fn run(&mut self) -> Result<()> {
+        info!("starting flowchart");
         loop {
             match &self.choices() {
                 Some(choices) => {
                     match choices.len() {
                         0 => {
+                            info!("dead end at {}", &self.current_node);
                             println!("no choices");
                             break;
                         }
@@ -48,15 +51,19 @@ impl Traverse for GraphMachine {
                                 .interact()
                                 .unwrap()
                             {
+                                info!(
+                                    "completed {} going to {}",
+                                    &self.current_node, choices[0].destination
+                                );
                                 println!("Traversing to {}", choices[0].destination);
                                 self.traverse(choices[0].destination.clone());
                             } else {
+                                info!("at {} not continuing", &self.current_node);
                                 println!("exiting flowchart");
                                 break;
                             }
                         }
                         _ => {
-                            // use fuzzy select
                             let prompt = match self.get_node_label() {
                                 Some(x) => x,
                                 None => &self.current_node,
@@ -67,16 +74,19 @@ impl Traverse for GraphMachine {
                                 .items(&choices[..])
                                 .interact()
                                 .unwrap();
+                            info!("at {} chose {}", &self.current_node, choices[selection]);
                             self.traverse(choices[selection].destination.clone());
                         }
                     };
                 }
                 None => {
+                    info!("dead end at {}", &self.current_node);
                     println!("This is the end.");
                     break;
                 }
             };
         }
+        info!("exiting flowchart");
         Ok(())
     }
 
