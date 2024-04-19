@@ -1,6 +1,6 @@
 use crate::graph::{Edge, Node};
 use anyhow::Result;
-use dialoguer::{theme::ColorfulTheme, Confirm, FuzzySelect};
+use dialoguer::{theme::ColorfulTheme, FuzzySelect};
 use log::info;
 use std::collections::HashMap;
 
@@ -29,6 +29,7 @@ impl GraphMachine {
 impl Traverse for GraphMachine {
     fn run(&mut self) -> Result<()> {
         info!("starting flowchart");
+        let one_edge = &["Completed", "Skipping"];
         loop {
             match &self.choices() {
                 Some(choices) => {
@@ -43,25 +44,28 @@ impl Traverse for GraphMachine {
                                 Some(x) => x,
                                 None => &self.current_node,
                             };
-                            println!("{}", prompt);
-                            if Confirm::with_theme(&ColorfulTheme::default())
-                                .with_prompt("Continue?")
-                                .default(true)
-                                .show_default(false)
+                            let selection = FuzzySelect::with_theme(&ColorfulTheme::default())
+                                .with_prompt(prompt)
+                                .default(0)
+                                .items(&one_edge[..])
                                 .interact()
-                                .unwrap()
-                            {
-                                info!(
-                                    "completed {} going to {}",
-                                    &self.current_node, choices[0].destination
-                                );
-                                println!("Traversing to {}", choices[0].destination);
-                                self.traverse(choices[0].destination.clone());
-                            } else {
-                                info!("at {} not continuing", &self.current_node);
-                                println!("exiting flowchart");
-                                break;
-                            }
+                                .unwrap();
+                            match selection {
+                                0 => {
+                                    info!(
+                                        "completed {} going to {}",
+                                        &self.current_node, &choices[0].destination
+                                    );
+                                }
+                                _ => {
+                                    info!(
+                                        "skipping {} going to {}",
+                                        &self.current_node, &choices[0].destination
+                                    );
+                                }
+                            };
+                            println!("Traversing to {}", &choices[0].destination);
+                            self.traverse(choices[0].destination.clone());
                         }
                         _ => {
                             let prompt = match self.get_node_label() {
