@@ -2,21 +2,17 @@ extern crate pest;
 //#[macro_use]
 extern crate pest_derive;
 
-use crate::mermaid::parse_mermaid;
-use crate::runner::{GraphMachine, Traverse};
 use anyhow::{bail, Result};
 use chrono::{DateTime, Datelike, Local, Timelike};
 use clap::Parser as ClapParser;
+use lanthir_cli::mermaid::parse_mermaid;
+use lanthir_cli::runner::{GraphMachine, Traverse};
 #[allow(unused_imports)]
 use pest::Parser as PestParser;
 use sha2::{Digest, Sha256};
 use simplelog::{ConfigBuilder, LevelFilter, WriteLogger};
 use std::fs;
 use std::path::PathBuf;
-
-pub mod graph;
-pub mod mermaid;
-pub mod runner;
 
 #[derive(clap::Parser)]
 #[command(author, version, about, long_about = None)]
