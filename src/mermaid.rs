@@ -17,8 +17,9 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
     for part in mermaid_parts.into_inner() {
         match part.as_rule() {
             Rule::line => {
-                let mut line_node_clusters: Vec<Vec<(String, Option<String>, Option<String>)>> =
-                    Vec::new();
+                let mut line_node_clusters: Vec<
+                    Vec<(String, Option<String>, Option<String>, Option<String>)>,
+                > = Vec::new();
                 let mut line_edges: Vec<(bool, Option<String>)> = Vec::new();
                 // let mut node_index: u8 = 0;
                 // let mut edge_index: u8 = 0;
@@ -27,8 +28,12 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                     match pair.as_rule() {
                         Rule::node_cluster => {
                             // Node Cluster
-                            let mut cluster_nodes: Vec<(String, Option<String>, Option<String>)> =
-                                Vec::new();
+                            let mut cluster_nodes: Vec<(
+                                String,
+                                Option<String>,
+                                Option<String>,
+                                Option<String>,
+                            )> = Vec::new();
                             for node in pair.into_inner() {
                                 match node.as_rule() {
                                     Rule::node => {
@@ -36,6 +41,7 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                         let mut node_id: String = String::new();
                                         let mut node_text: Option<String> = None;
                                         let mut node_cmd: Option<String> = None;
+                                        let mut node_cb: Option<String> = None;
                                         for node_attr in node.into_inner() {
                                             match node_attr.as_rule() {
                                                 Rule::node_id => {
@@ -78,6 +84,36 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                                                     }
                                                                 }
                                                             }
+                                                            Rule::clip_board => {
+                                                                // Shell CMD
+                                                                for clipboard_content in
+                                                                    node_content.into_inner()
+                                                                {
+                                                                    match clipboard_content
+                                                                        .as_rule()
+                                                                    {
+                                                                        Rule::shell_text => {
+                                                                            let mut
+                                                                            clipboard_string =
+                                                                                String::new();
+                                                                            for slice in
+                                                                                clipboard_content
+                                                                                    .into_inner()
+                                                                            {
+                                                                                match slice.as_rule() {
+                                                                                    Rule::non_double_quote => clipboard_string.push_str(slice.as_str()),
+                                                                                    Rule::double_quote => clipboard_string.push('"'),
+                                                                                    _ => unreachable!(),
+                                                                                }
+                                                                            }
+                                                                            node_cb = Some(
+                                                                                clipboard_string,
+                                                                            );
+                                                                        }
+                                                                        _ => unreachable!(),
+                                                                    }
+                                                                }
+                                                            }
                                                             _ => unreachable!(),
                                                         }
                                                     }
@@ -85,7 +121,7 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                                 _ => unreachable!(),
                                             }
                                         }
-                                        cluster_nodes.push((node_id, node_text, node_cmd));
+                                        cluster_nodes.push((node_id, node_text, node_cmd, node_cb));
                                     }
                                     _ => {
                                         unreachable!()
@@ -159,6 +195,7 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                         }],
                                         label: src_node.1.clone(),
                                         cmd: src_node.2.clone(),
+                                        cb: src_node.3.clone(),
                                     });
                                 graph
                                     .entry(dest_node.0.clone())
@@ -167,6 +204,7 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                                         outputs: vec![],
                                         label: dest_node.1.clone(),
                                         cmd: dest_node.2.clone(),
+                                        cb: dest_node.3.clone(),
                                     });
                             }
                         }
@@ -183,9 +221,9 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
 
 fn modify_src_entry(
     entry: &mut Node,
-    src_node: (String, Option<String>, Option<String>),
+    src_node: (String, Option<String>, Option<String>, Option<String>),
     edge: (bool, Option<String>),
-    dest_node: (String, Option<String>, Option<String>),
+    dest_node: (String, Option<String>, Option<String>, Option<String>),
 ) {
     entry.outputs.push(Edge {
         destination: dest_node.0.clone(),
@@ -198,13 +236,22 @@ fn modify_src_entry(
     if src_node.2.is_some() {
         entry.cmd = src_node.2;
     }
+    if src_node.3.is_some() {
+        entry.cb = src_node.3;
+    }
 }
 
-fn modify_dest_entry(entry: &mut Node, dest_node: (String, Option<String>, Option<String>)) {
+fn modify_dest_entry(
+    entry: &mut Node,
+    dest_node: (String, Option<String>, Option<String>, Option<String>),
+) {
     if dest_node.1.is_some() {
         entry.label = dest_node.1;
     }
     if dest_node.2.is_some() {
         entry.cmd = dest_node.2;
+    }
+    if dest_node.3.is_some() {
+        entry.cb = dest_node.3;
     }
 }

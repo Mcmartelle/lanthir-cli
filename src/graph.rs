@@ -5,6 +5,7 @@ pub struct Node {
     pub outputs: Vec<Edge>,
     pub label: Option<String>,
     pub cmd: Option<String>,
+    pub cb: Option<String>,
 }
 
 #[derive(Debug)]

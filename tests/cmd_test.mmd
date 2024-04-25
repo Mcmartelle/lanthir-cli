@@ -1,5 +1,7 @@
 flowchart TD
-    Start--Failure-->id3(Oh no it failed)
-    Start["run[echo #quot;hello#quot;]"]--Success-->id2(Hooray the command succeeded)
-    id2--Torture Test-->id4("run[-_(){}'~./\|&;<>$`,:@#%^*+=?{}!]")
-    
+    Start-->A
+    A["run[echo #quot;hello#quot;]"]-->B(Hooray the command succeeded)
+    B-->C["run[echo #quot;world#quot;]"]
+    C-->|foo|D(Fooby)
+    C--bar-->E(Barry)
+    D & E --> End

@@ -1,7 +1,7 @@
 header = { "flowchart" ~ chart_direction ~ NEWLINE }
 chart_direction = _{ "TD" | "TB" | "LR" | "BT" | "RL" }
 node_id = @{ (ASCII_ALPHANUMERIC | "_" )+ }
-node_shape = { shape_open ~ (shell_cmd | node_text) ~ shape_close }
+node_shape = { shape_open ~ (shell_cmd | clip_board | node_text) ~ shape_close }
 shape_open = _{  "(((" | "((" | "([" | "{{" | "[[" | "[/" | "[\\" | "[(" | "[" | "(" | "{" }
 shape_close = _{ ")))" | "))" | "]]" | "}}" | "])" | ")]" | "\\]" | "/]" | "}" | ")" | "]" }
 node_text = { unquoted_text | quoted_text }
@@ -9,6 +9,7 @@ unquoted_text = _{ ( ASCII_ALPHANUMERIC | WHITESPACE | unquoted_symbol )+ }
 unquoted_symbol = { "," | "_" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "+" | "?" }
 quoted_text = { "\"" ~ shell_text ~ "\"" }
 shell_cmd = { "\"run[" ~ shell_text ~ "]\"" }
+clip_board = { "\"cb[" ~ shell_text ~ "]\"" }
 shell_text = { ( double_quote | non_double_quote )+ }
 non_double_quote = @{ (ASCII_ALPHANUMERIC | WHITESPACE | quoted_symbol)+ }
 quoted_symbol = _{ "-" | "_" | "(" | ")" | "'" | "~" | "." | "/" | "\\" | "|" | "&" | ":" | ";" | "<" | ">" | "$" | "`" | "{" | "}" | "!" | "," | "_" | "!" | "@" | "%" | "^" | "*" | "+" | "=" | "?" }
