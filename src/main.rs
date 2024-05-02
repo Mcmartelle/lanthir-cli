@@ -23,6 +23,8 @@ struct Cli {
     log_path: Option<PathBuf>,
     #[arg(short, long)]
     log: Option<bool>,
+    #[arg(long)]
+    verbose: bool,
 }
 
 fn main() -> Result<()> {
@@ -61,7 +63,7 @@ fn main() -> Result<()> {
                 );
             }
 
-            let flowchart_graph = parse_mermaid(&flowchart_string)?;
+            let flowchart_graph = parse_mermaid(&flowchart_string, args.verbose)?;
             let mut flowchart_runner = GraphMachine::new(String::from("Start"), flowchart_graph);
             flowchart_runner.run()?;
         }

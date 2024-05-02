@@ -7,7 +7,7 @@ use std::collections::HashMap;
 #[grammar = "mermaid.pest"]
 pub struct MermaidParser;
 
-pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
+pub fn parse_mermaid(flowchart_string: &str, verbose: bool) -> Result<HashMap<String, Node>> {
     let mermaid_parts = MermaidParser::parse(Rule::mmd, flowchart_string)
         .expect("unsuccessful pest parse")
         .next()
@@ -171,8 +171,11 @@ pub fn parse_mermaid(flowchart_string: &str) -> Result<HashMap<String, Node>> {
                     }
                 }
                 // Process line data into graph here
-                // println!("line_node_clusters: {:#?}", line_node_clusters);
-                // println!("line_edges: {:#?}", line_edges);
+
+                if verbose {
+                    println!("line_node_clusters: {:#?}", line_node_clusters);
+                    println!("line_edges: {:#?}", line_edges);
+                }
                 assert_eq!(line_node_clusters.len(), line_edges.len() + 1);
                 for index in 0..line_edges.len() {
                     if line_edges[index].0 {
