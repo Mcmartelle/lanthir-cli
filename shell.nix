@@ -48,4 +48,5 @@ with pkgs;
       ''-I${pkgs.glib.out}/lib/glib-2.0/include/''
     ];
     LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
+    RUST_SRC_PATH = "${rustPlatform.rustLibSrc}";
 }

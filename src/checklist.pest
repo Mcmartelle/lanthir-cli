@@ -1,0 +1,12 @@
+triple_tick = _{ "```" }
+text = _{ (!NEWLINE ~ !triple_tick ~ ANY)* }
+alone = { text }
+before = { text }
+after = { text }
+inner= { text }
+wrapper = { triple_tick ~ inner ~ triple_tick }
+line = { ((before ~ wrapper ~ after) | alone) ~ NEWLINE }
+WHITESPACE = _{ " " }
+COMMENT = _{ "//" ~ (!NEWLINE ~ ANY)* }
+checklist = { line+ }
+file = _{ SOI ~ checklist ~ EOI }
