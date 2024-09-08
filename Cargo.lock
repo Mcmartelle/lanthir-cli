@@ -558,6 +558,7 @@ dependencies = [
  "arboard",
  "chrono",
  "clap",
+ "console",
  "dialoguer",
  "graph_builder",
  "home",

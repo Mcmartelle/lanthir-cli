@@ -12,6 +12,7 @@ anyhow = "1.0.81"
 arboard = { version = "3.3.2", default-features = false }
 chrono = "0.4.38"
 clap = { version = "4.5.3", features = ["derive"] }
+console = "0.15.8"
 dialoguer = { version = "0.11.0", features = ["fuzzy-select"] }
 graph_builder = "0.4.0"
 home = "0.5.9"
