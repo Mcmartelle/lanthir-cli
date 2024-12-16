@@ -9,6 +9,8 @@ use lanthir_cli::checklist::parse_checklist;
 use lanthir_cli::checklist_runner::{Checkify, ChecklistMachine};
 use lanthir_cli::graph_runner::{GraphMachine, Traverse};
 use lanthir_cli::mermaid::parse_mermaid;
+use lanthir_cli::oats::parse_oats;
+use lanthir_cli::oats_runner::{Oatify, OatsMachine};
 #[allow(unused_imports)]
 use pest::Parser as PestParser;
 use sha2::{Digest, Sha256};
@@ -36,83 +38,129 @@ fn main() -> Result<()> {
 
     match args.input {
         Some(input) => match input.extension() {
-            Some(ext) => {
-                if "mmd" == ext {
-                    let flowchart_string = fs::read_to_string(&input)?;
+            Some(os_ext) => match os_ext.to_str() {
+                Some(ext) => match ext {
+                    "mmd" => {
+                        let flowchart_string = fs::read_to_string(&input)?;
 
-                    if args.log.unwrap_or(true) {
-                        let log_dir = match args.log_path {
-                            Some(mut path) => {
-                                path.push("test.log");
-                                path
-                            }
-                            None => match home::home_dir() {
+                        if args.log.unwrap_or(true) {
+                            let log_dir = match args.log_path {
                                 Some(mut path) => {
-                                    path.push(".lanthir");
-                                    path.push("logs");
-
-                                    let filename = generate_logfile_name(
-                                        input.file_stem().unwrap().to_str().unwrap(),
-                                        &flowchart_string,
-                                    )?;
-                                    path.push(filename);
+                                    path.push("test.log");
                                     path
                                 }
-                                None => bail!("Unable to get home directory"),
-                            },
-                        };
-                        let config = ConfigBuilder::new().set_time_format_rfc3339().build();
-                        let _ = WriteLogger::init(
-                            LevelFilter::Info,
-                            config,
-                            fs::File::create(log_dir).unwrap(),
-                        );
+                                None => match home::home_dir() {
+                                    Some(mut path) => {
+                                        path.push(".lanthir");
+                                        path.push("logs");
+
+                                        let filename = generate_logfile_name(
+                                            input.file_stem().unwrap().to_str().unwrap(),
+                                            &flowchart_string,
+                                        )?;
+                                        path.push(filename);
+                                        path
+                                    }
+                                    None => bail!("Unable to get home directory"),
+                                },
+                            };
+                            let config = ConfigBuilder::new().set_time_format_rfc3339().build();
+                            let _ = WriteLogger::init(
+                                LevelFilter::Info,
+                                config,
+                                fs::File::create(log_dir).unwrap(),
+                            );
+                        }
+
+                        let flowchart_graph = parse_mermaid(&flowchart_string, args.verbose)?;
+                        let mut flowchart_runner =
+                            GraphMachine::new(String::from("Start"), flowchart_graph);
+                        flowchart_runner.run()?;
                     }
 
-                    let flowchart_graph = parse_mermaid(&flowchart_string, args.verbose)?;
-                    let mut flowchart_runner =
-                        GraphMachine::new(String::from("Start"), flowchart_graph);
-                    flowchart_runner.run()?;
-                } else {
-                    let checklist_string = fs::read_to_string(&input)?;
-                    if args.log.unwrap_or(true) {
-                        let log_dir = match args.log_path {
-                            Some(mut path) => {
-                                path.push("test.log");
-                                path
-                            }
-                            None => match home::home_dir() {
+                    "oats" => {
+                        let oats_string = fs::read_to_string(&input)?;
+                        if args.log.unwrap_or(true) {
+                            let log_dir = match args.log_path {
                                 Some(mut path) => {
-                                    path.push(".lanthir");
-                                    path.push("logs");
-
-                                    let filename = generate_logfile_name(
-                                        input.file_stem().unwrap().to_str().unwrap(),
-                                        &checklist_string,
-                                    )?;
-                                    path.push(filename);
+                                    path.push("test.log");
                                     path
                                 }
-                                None => bail!("Unable to get home directory"),
-                            },
-                        };
-                        let config = ConfigBuilder::new().set_time_format_rfc3339().build();
-                        let _ = WriteLogger::init(
-                            LevelFilter::Info,
-                            config,
-                            fs::File::create(log_dir).unwrap(),
-                        );
+                                None => match home::home_dir() {
+                                    Some(mut path) => {
+                                        path.push(".lanthir");
+                                        path.push("logs");
+
+                                        let filename = generate_logfile_name(
+                                            input.file_stem().unwrap().to_str().unwrap(),
+                                            &oats_string,
+                                        )?;
+                                        path.push(filename);
+                                        path
+                                    }
+                                    None => bail!("Unable to get home directory"),
+                                },
+                            };
+                            let config = ConfigBuilder::new().set_time_format_rfc3339().build();
+                            let _ = WriteLogger::init(
+                                LevelFilter::Info,
+                                config,
+                                fs::File::create(log_dir).unwrap(),
+                            );
+                        }
+
+                        let oats = parse_oats(&oats_string, args.verbose, args.unordered)?;
+                        let mut oats_runner = OatsMachine::new(String::from("Start"), oats);
+                        oats_runner.run()?;
                     }
 
-                    let checklist =
-                        parse_checklist(&checklist_string, args.verbose, args.unordered)?;
-                    let mut checklist_runner =
-                        ChecklistMachine::new(String::from("Start"), checklist);
-                    checklist_runner.run()?;
+                    "ckl" | "txt" => {
+                        let checklist_string = fs::read_to_string(&input)?;
+                        if args.log.unwrap_or(true) {
+                            let log_dir = match args.log_path {
+                                Some(mut path) => {
+                                    path.push("test.log");
+                                    path
+                                }
+                                None => match home::home_dir() {
+                                    Some(mut path) => {
+                                        path.push(".lanthir");
+                                        path.push("logs");
+
+                                        let filename = generate_logfile_name(
+                                            input.file_stem().unwrap().to_str().unwrap(),
+                                            &checklist_string,
+                                        )?;
+                                        path.push(filename);
+                                        path
+                                    }
+                                    None => bail!("Unable to get home directory"),
+                                },
+                            };
+                            let config = ConfigBuilder::new().set_time_format_rfc3339().build();
+                            let _ = WriteLogger::init(
+                                LevelFilter::Info,
+                                config,
+                                fs::File::create(log_dir).unwrap(),
+                            );
+                        }
+
+                        let checklist =
+                            parse_checklist(&checklist_string, args.verbose, args.unordered)?;
+                        let mut checklist_runner =
+                            ChecklistMachine::new(String::from("Start"), checklist);
+                        checklist_runner.run()?;
+                    }
+                    _ => {
+                        bail!("file extension not supported");
+                    }
+                },
+                None => {
+                    bail!("File extension unable to convert from OsStr");
                 }
-            }
+            },
             None => {
-                bail!("file extension not supported");
+                bail!("No file extension");
             }
         },
         None => {
