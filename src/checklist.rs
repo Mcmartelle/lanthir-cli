@@ -24,11 +24,7 @@ impl fmt::Display for Vertex {
     }
 }
 
-pub fn parse_checklist(
-    checklist_string: &str,
-    verbose: bool,
-    unordered: bool,
-) -> Result<Vec<Vertex>> {
+pub fn parse_checklist(checklist_string: &str, verbose: bool) -> Result<Vec<Vertex>> {
     let checklist_parts = ChecklistParser::parse(Rule::checklist, checklist_string)
         .expect("unsuccessful pest parse")
         .next()
@@ -78,9 +74,6 @@ pub fn parse_checklist(
         for vector in &nodes {
             println!("{}", vector);
         }
-    }
-    if unordered {
-        println!("unordered currently not supported");
     }
 
     return Ok(nodes);

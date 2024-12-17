@@ -9,16 +9,12 @@ use dialoguer::{theme::ColorfulTheme, FuzzySelect};
 use log::info;
 
 pub struct OatsMachine {
-    current_idx: usize,
     list: Vec<Grain>,
 }
 
 impl OatsMachine {
     pub fn new(list: Vec<Grain>) -> OatsMachine {
-        OatsMachine {
-            current_idx: 0,
-            list,
-        }
+        OatsMachine { list }
     }
 }
 
@@ -34,7 +30,7 @@ impl Oatify for OatsMachine {
         let one_of_prompt = "Complete one of the following";
         let unordered_prompt = "Complete all of the following in any order";
         let and_then_items = &["Completed", "Skipping"];
-        let cb_node = &["Copy to Clipboard", "Skip"];
+        // let cb_node = &["Copy to Clipboard", "Skip"];
         let selection = FuzzySelect::with_theme(&ColorfulTheme::default())
             .with_prompt(start_prompt)
             .default(0)

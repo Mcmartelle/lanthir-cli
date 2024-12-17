@@ -29,8 +29,6 @@ struct Cli {
     log: Option<bool>,
     #[arg(long)]
     verbose: bool,
-    #[arg(long)]
-    unordered: bool,
 }
 
 fn main() -> Result<()> {
@@ -109,7 +107,7 @@ fn main() -> Result<()> {
                             );
                         }
 
-                        let oats = parse_oats(&oats_string, args.verbose, args.unordered)?;
+                        let oats = parse_oats(&oats_string, args.verbose)?;
                         let mut oats_runner = OatsMachine::new(oats);
                         oats_runner.run()?;
                     }
@@ -145,8 +143,7 @@ fn main() -> Result<()> {
                             );
                         }
 
-                        let checklist =
-                            parse_checklist(&checklist_string, args.verbose, args.unordered)?;
+                        let checklist = parse_checklist(&checklist_string, args.verbose)?;
                         let mut checklist_runner =
                             ChecklistMachine::new(String::from("Start"), checklist);
                         checklist_runner.run()?;

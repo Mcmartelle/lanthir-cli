@@ -32,7 +32,7 @@ impl fmt::Display for Grain {
     }
 }
 
-pub fn parse_oats(oats_string: &str, verbose: bool, unordered: bool) -> Result<Vec<Grain>> {
+pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Grain>> {
     let oats_parts = OatsParser::parse(Rule::oats, oats_string)
         .expect("unsuccessful pest parse")
         .next()
