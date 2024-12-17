@@ -35,9 +35,11 @@ mod tests {
     #[test]
     fn all_together() {
         let oats = r#"& hello
-    & there
+    & there // comment
+    // this comment shouldn't change anything
 
     | foo
+    // this comment shouldn't change anything
     ~ bar
         "#;
         let grains = parse_oats(&oats, false).unwrap();

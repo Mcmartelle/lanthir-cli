@@ -1,4 +1,4 @@
-node       =  { marker ~ content ~ NEWLINE? }
+node       =  { marker ~ content ~ _COMMENT? ~ NEWLINE? }
 breaker    =  { NEWLINE }
 marker     =  { unordered | one_of | and_then | clipbo }
 unordered  =  { "&" }
@@ -6,8 +6,8 @@ one_of     =  { "|" }
 and_then   =  { "~" }
 clipbo     =  { "=" }
 content    = @{ char+ }
-char       = _{ !(NEWLINE) ~ ANY }
+char       = _{ !(NEWLINE | "//") ~ ANY }
 WHITESPACE = _{ " " }
-COMMENT    = _{ "//" ~ (!NEWLINE ~ ANY)* }
-oats       =  { (node | breaker)+ }
+_COMMENT   = _{ "//" ~ (!NEWLINE ~ ANY)* ~ NEWLINE }
+oats       =  { (node | breaker | _COMMENT)+ }
 oats_file  = _{ SOI ~ oats ~ EOI }

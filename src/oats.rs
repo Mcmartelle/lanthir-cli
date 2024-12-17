@@ -57,7 +57,7 @@ pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Grain>> {
                                 }
                             }
                         }
-                        Rule::content => content = Some(String::from(pair.as_str())),
+                        Rule::content => content = Some(String::from(pair.as_str().trim())),
                         Rule::breaker => marker = Some(Marker::Breaker),
                         _ => unreachable!(),
                     }
@@ -79,8 +79,8 @@ pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Grain>> {
     // Process line data into graph here
 
     if verbose {
-        for vector in &nodes {
-            println!("{}", vector);
+        for grain in &nodes {
+            println!("{}", grain);
         }
     }
 
