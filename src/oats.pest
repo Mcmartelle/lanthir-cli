@@ -9,5 +9,5 @@ content    = @{ char+ }
 char       = _{ !(NEWLINE) ~ ANY }
 WHITESPACE = _{ " " }
 COMMENT    = _{ "//" ~ (!NEWLINE ~ ANY)* }
-oats       =  { (node | break)+ }
+oats       =  { (node | breaker)+ }
 oats_file  = _{ SOI ~ oats ~ EOI }

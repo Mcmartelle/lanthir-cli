@@ -110,7 +110,7 @@ fn main() -> Result<()> {
                         }
 
                         let oats = parse_oats(&oats_string, args.verbose, args.unordered)?;
-                        let mut oats_runner = OatsMachine::new(String::from("Start"), oats);
+                        let mut oats_runner = OatsMachine::new(oats);
                         oats_runner.run()?;
                     }
 
