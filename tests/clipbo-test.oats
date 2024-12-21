@@ -1,0 +1,14 @@
+~ Do this next
+= clippy boardy 1
+~ And then do this next
+= clipbo boardy 2
+
+& And Do this
+= clippy boardy 3
+& And this
+= clipbo boardy 4
+
+| Or Do this
+= clippy boardy 5
+| Or this
+= clipbo boardy 6

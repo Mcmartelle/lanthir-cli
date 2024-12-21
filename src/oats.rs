@@ -6,7 +6,7 @@ use std::fmt;
 #[grammar = "oats.pest"]
 pub struct OatsParser;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Copy)]
 pub enum Marker {
     Unordered,
     OneOf,
@@ -16,28 +16,27 @@ pub enum Marker {
 }
 
 #[derive(Clone)]
-pub struct Grain {
+pub struct Groat {
     pub marker: Option<Marker>,
     pub content: Option<String>,
-    pub done: bool,
 }
 
-impl fmt::Display for Grain {
+impl fmt::Display for Groat {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "marker: {:?}, content: {:?}, done: {:?}",
-            &self.marker, &self.content, &self.done
+            "marker: {:?}, content: {:?}",
+            &self.marker, &self.content
         )
     }
 }
 
-pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Grain>> {
+pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Groat>> {
     let oats_parts = OatsParser::parse(Rule::oats, oats_string)
         .expect("unsuccessful pest parse")
         .next()
         .unwrap();
-    let mut nodes: Vec<Grain> = Vec::new();
+    let mut nodes: Vec<Groat> = Vec::new();
 
     for part in oats_parts.into_inner() {
         match part.as_rule() {
@@ -62,16 +61,14 @@ pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Grain>> {
                         _ => unreachable!(),
                     }
                 }
-                nodes.push(Grain {
+                nodes.push(Groat {
                     marker: marker,
                     content: content,
-                    done: false,
                 });
             }
-            Rule::breaker => nodes.push(Grain {
+            Rule::breaker => nodes.push(Groat {
                 marker: Some(Marker::Breaker),
                 content: None,
-                done: false,
             }),
             _ => unreachable!(),
         }
