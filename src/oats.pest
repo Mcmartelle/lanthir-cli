@@ -1,9 +1,10 @@
 node       =  { marker ~ content ~ _COMMENT? ~ NEWLINE? }
 breaker    =  { NEWLINE }
-marker     =  { unordered | one_of | and_then | clipbo }
+marker     =  { unordered | one_of | and_then | optional | clipbo }
 unordered  =  { "&" }
 one_of     =  { "|" }
 and_then   =  { "~" }
+optional   =  { "?" }
 clipbo     =  { "=" }
 content    = @{ char+ }
 char       = _{ !(NEWLINE | "//") ~ ANY }

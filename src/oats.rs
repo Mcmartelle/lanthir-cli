@@ -11,6 +11,7 @@ pub enum Marker {
     Unordered,
     OneOf,
     AndThen,
+    Optional,
     Clipbo,
     Breaker,
 }
@@ -51,6 +52,7 @@ pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Groat>> {
                                     Rule::unordered => marker = Some(Marker::Unordered),
                                     Rule::one_of => marker = Some(Marker::OneOf),
                                     Rule::and_then => marker = Some(Marker::AndThen),
+                                    Rule::optional => marker = Some(Marker::Optional),
                                     Rule::clipbo => marker = Some(Marker::Clipbo),
                                     _ => unreachable!(),
                                 }

@@ -13,6 +13,15 @@ mod tests {
     }
 
     #[test]
+    fn optional() {
+        let oats = r#"? hello
+        "#;
+        let grains = parse_oats(&oats, false).unwrap();
+        assert_eq!(grains[0].marker, Some(Marker::Optional));
+        assert_eq!(grains[0].content, Some(String::from("hello")));
+    }
+
+    #[test]
     fn one_of() {
         let oats = r#"| hello
         "#;
@@ -39,6 +48,7 @@ mod tests {
     | foo
     // this comment shouldn't change anything
     ~ bar
+    ? baz
         "#;
         let grains = parse_oats(&oats, false).unwrap();
         assert_eq!(grains[0].marker, Some(Marker::Unordered));
@@ -51,6 +61,8 @@ mod tests {
         assert_eq!(grains[3].content, Some(String::from("foo")));
         assert_eq!(grains[4].marker, Some(Marker::AndThen));
         assert_eq!(grains[4].content, Some(String::from("bar")));
+        assert_eq!(grains[5].marker, Some(Marker::Optional));
+        assert_eq!(grains[5].content, Some(String::from("baz")));
     }
 
     #[test]

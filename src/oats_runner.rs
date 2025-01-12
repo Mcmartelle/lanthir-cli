@@ -35,9 +35,10 @@ impl Oatify for OatsMachine {
         info!("starting sequence");
         let start_prompt = "Warning: Your clipboard may be overwritten. Start?";
         let start_items = &["Okay"];
-        let one_of_prompt = "Complete one of the following";
-        let unordered_prompt = "Complete all of the following in any order";
-        let and_then_items = &["Completed", "Skipping"];
+        let one_of_prompt = "Complete one of";
+        let unordered_prompt = "Complete all in any order";
+        let and_then_items = &["Done"];
+        let optional_items = &["Completed", "Skipping"];
         // let cb_node = &["Copy to Clipboard", "Skip"];
         let selection = FuzzySelect::with_theme(&ColorfulTheme::default())
             .with_prompt(start_prompt)
@@ -80,6 +81,41 @@ impl Oatify for OatsMachine {
                                 .with_prompt(&text)
                                 .default(0)
                                 .items(and_then_items)
+                                .interact()
+                                .unwrap();
+                            match selection {
+                                0 => {
+                                    info!("done: {}", &text);
+                                }
+                                _ => {
+                                    info!("skipping: {}", &text);
+                                }
+                            }
+                        });
+                }
+                Marker::Optional => {
+                    sublist
+                        .into_iter()
+                        .filter(|a| a.content.is_some())
+                        .for_each(|step| {
+                            let mut text: String;
+                            let parts: [&str; 3];
+                            if step.clipboard.is_some() {
+                                parts = [
+                                    step.content.as_ref().unwrap(),
+                                    " (Optional)\nCopied to Clipboard: ",
+                                    step.clipboard.as_ref().unwrap(),
+                                ];
+                                text = parts.concat();
+                                let _ = copy_to_clipboard(step.clipboard.as_ref().unwrap().clone());
+                            } else {
+                                text = step.content.as_ref().unwrap().to_owned();
+                                text.push_str(" (Optional)");
+                            }
+                            let selection = FuzzySelect::with_theme(&ColorfulTheme::default())
+                                .with_prompt(&text)
+                                .default(0)
+                                .items(optional_items)
                                 .interact()
                                 .unwrap();
                             match selection {
