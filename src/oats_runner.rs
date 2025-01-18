@@ -205,7 +205,20 @@ pub fn groats_to_oatlets(groats: &Vec<Groat>) -> Vec<Oatlet> {
     let mut oatlets: Vec<Oatlet> = Vec::new();
     for groat in groats {
         if groat.marker.is_some() && groat.marker.unwrap() == Marker::Clipbo && oatlets.len() > 0 {
-            oatlets.last_mut().unwrap().clipboard = groat.content.clone();
+            match &oatlets.last().unwrap().clipboard {
+                Some(clip) => {
+                    match &groat.content {
+                        Some(clip_more) => {
+                            oatlets.last_mut().unwrap().clipboard =
+                                Some(clip.clone() + "\n" + clip_more.clone().as_str());
+                        }
+                        None => {} // No extra clip to add
+                    }
+                }
+                None => {
+                    oatlets.last_mut().unwrap().clipboard = groat.content.clone();
+                }
+            }
         } else if groat.marker.is_some() {
             oatlets.push(Oatlet {
                 marker: groat.marker.unwrap(),

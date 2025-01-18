@@ -1,14 +1,17 @@
-node       =  { marker ~ content ~ _COMMENT? ~ NEWLINE? }
-breaker    =  { NEWLINE }
-marker     =  { unordered | one_of | and_then | optional | clipbo }
-unordered  =  { "&" }
-one_of     =  { "|" }
-and_then   =  { "~" }
-optional   =  { "?" }
-clipbo     =  { "=" }
-content    = @{ char+ }
-char       = _{ !(NEWLINE | "//") ~ ANY }
-WHITESPACE = _{ " " }
-_COMMENT   = _{ "//" ~ (!NEWLINE ~ ANY)* ~ NEWLINE }
-oats       =  { (node | breaker | _COMMENT)+ }
-oats_file  = _{ SOI ~ oats ~ EOI }
+content_node        =  { marker ~ content ~ _COMMENT? ~ NEWLINE? }
+breaker             =  { NEWLINE }
+marker              =  { unordered | one_of | and_then | optional }
+unordered           =  { "&" }
+one_of              =  { "|" }
+and_then            =  { "~" }
+optional            =  { "?" }
+content             = @{ char+ }
+char                = _{ !(NEWLINE | "//") ~ ANY }
+clipboard_node      = ${ clipbo ~ clipboard_content ~ NEWLINE }
+clipbo              =  { "= " }
+clipboard_content   = @{ clipboard_char+ }
+clipboard_char      = _{ !NEWLINE ~ ANY }
+WHITESPACE          = _{ " " }
+_COMMENT            = _{ "//" ~ (!NEWLINE ~ ANY)* ~ NEWLINE }
+oats                =  { (content_node | clipboard_node | breaker | _COMMENT)+ }
+oats_file           = _{ SOI ~ oats ~ EOI }

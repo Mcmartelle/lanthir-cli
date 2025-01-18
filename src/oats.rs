@@ -41,7 +41,7 @@ pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Groat>> {
 
     for part in oats_parts.into_inner() {
         match part.as_rule() {
-            Rule::node => {
+            Rule::content_node => {
                 let mut content: Option<String> = None;
                 let mut marker: Option<Marker> = None;
                 for pair in part.into_inner() {
@@ -53,13 +53,26 @@ pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Groat>> {
                                     Rule::one_of => marker = Some(Marker::OneOf),
                                     Rule::and_then => marker = Some(Marker::AndThen),
                                     Rule::optional => marker = Some(Marker::Optional),
-                                    Rule::clipbo => marker = Some(Marker::Clipbo),
                                     _ => unreachable!(),
                                 }
                             }
                         }
                         Rule::content => content = Some(String::from(pair.as_str().trim())),
-                        Rule::breaker => marker = Some(Marker::Breaker),
+                        _ => unreachable!(),
+                    }
+                }
+                nodes.push(Groat {
+                    marker: marker,
+                    content: content,
+                });
+            }
+            Rule::clipboard_node => {
+                let mut content: Option<String> = None;
+                let mut marker: Option<Marker> = None;
+                for pair in part.into_inner() {
+                    match pair.as_rule() {
+                        Rule::clipbo => marker = Some(Marker::Clipbo),
+                        Rule::clipboard_content => content = Some(String::from(pair.as_str())),
                         _ => unreachable!(),
                     }
                 }
@@ -75,7 +88,6 @@ pub fn parse_oats(oats_string: &str, verbose: bool) -> Result<Vec<Groat>> {
             _ => unreachable!(),
         }
     }
-    // Process line data into graph here
 
     if verbose {
         for grain in &nodes {

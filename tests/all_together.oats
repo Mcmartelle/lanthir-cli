@@ -1,0 +1,10 @@
+& hello
+& there // comment
+// this comment shouldn't change anything
+= blah blah
+
+| foo
+// this comment shouldn't change anything
+~ bar
+= clippy 1
+=  clippy 2 // not a comment 

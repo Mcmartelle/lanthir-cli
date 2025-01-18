@@ -68,13 +68,15 @@ mod tests {
     #[test]
     fn clipboard_groats() {
         let oats = r#"& hello
-    & there // comment
-    // this comment shouldn't change anything
-    = blah blah
+& there // comment
+// this comment shouldn't change anything
+= blah blah
 
-    | foo
-    // this comment shouldn't change anything
-    ~ bar
+| foo
+// this comment shouldn't change anything
+~ bar
+= clippy 1
+=  clippy 2 // not a comment 
         "#;
         let grains = parse_oats(&oats, false).unwrap();
         assert_eq!(grains[0].marker, Some(Marker::Unordered));
@@ -89,18 +91,27 @@ mod tests {
         assert_eq!(grains[4].content, Some(String::from("foo")));
         assert_eq!(grains[5].marker, Some(Marker::AndThen));
         assert_eq!(grains[5].content, Some(String::from("bar")));
+        assert_eq!(grains[6].marker, Some(Marker::Clipbo));
+        assert_eq!(grains[6].content, Some(String::from("clippy 1")));
+        assert_eq!(grains[7].marker, Some(Marker::Clipbo));
+        assert_eq!(
+            grains[7].content,
+            Some(String::from(" clippy 2 // not a comment "))
+        );
     }
 
     #[test]
     fn clipboard_oatlets() {
         let oats = r#"& hello
-    & there // comment
-    // this comment shouldn't change anything
-    = blah blah
+& there // comment
+// this comment shouldn't change anything
+= blah blah
 
-    | foo
-    // this comment shouldn't change anything
-    ~ bar
+| foo
+// this comment shouldn't change anything
+~ bar
+= clippy 1
+=  clippy 2 // not a comment 
         "#;
         let groats: Vec<Groat> = parse_oats(&oats, false).unwrap();
         let oatlets: Vec<Oatlet> = groats_to_oatlets(&groats);
@@ -117,5 +128,9 @@ mod tests {
         assert_eq!(oatlets[3].content, Some(String::from("foo")));
         assert_eq!(oatlets[4].marker, Marker::AndThen);
         assert_eq!(oatlets[4].content, Some(String::from("bar")));
+        assert_eq!(
+            oatlets[4].clipboard,
+            Some(String::from("clippy 1\n clippy 2 // not a comment "))
+        );
     }
 }
