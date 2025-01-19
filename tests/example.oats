@@ -1,0 +1,18 @@
+~ Do this first
+~ And then this
+~ And then this
+
+& Do this
+& And this
+& And this
+& And this, but in any order
+
+| Do this
+| Or this
+| Or this, but just one
+
+? Do this or don't, it's optional
+
+~ Then do this
+= This text will be copied to the clip board when you get to "~ Then do This"
+= It can be multiline as well.

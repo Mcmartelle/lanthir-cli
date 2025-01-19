@@ -1,7 +1,7 @@
 ~ Do this next
-    = clippy boardy 1
+= clippy boardy 1
 ~ And then do this next
-    = clipbo boardy 2
+= clipbo boardy 2
 
 & And Do this
 = clippy boardy 3
