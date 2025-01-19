@@ -8,6 +8,7 @@ Command line flow chart follower/runner and logger.
 - Mermaid .mmd
   - Fully featured flowchart spec
   - Only the "Flowchart" portion of mermaid's syntax is supported
+  - The mermaid way of escaping double quote marks `"` is not convenient.
   - Example:
   ```Mermaid
   flowchart TD
@@ -39,15 +40,23 @@ Command line flow chart follower/runner and logger.
   & And this
   & And this
   & And this, but in any order
+
+  & The extra newline above me
+  & Means this chunk of "&" nodes
+  & will be done after those four
   
   | Do this
   | Or this
   | Or this, but just one
+
+  | Again, newlines can break up
+  | Chunks of "&" and "|" nodes
   
   ? Do this or don't, it's optional
   
   ~ Then do this
   = This text will be copied to the system clipboard when you get to "~ Then do This"
   = It can be multiline as well.
+  =   leading spaces after the first space will be copied
   ```
 
