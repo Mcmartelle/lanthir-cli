@@ -2,6 +2,17 @@
 
 Command line flow chart follower/runner and logger.
 
+```
+Usage: lanthir [OPTIONS]
+
+Options:
+  -i, --input <INPUT>
+      --log-path <LOG_PATH>
+  -l, --log <LOG>            [possible values: true, false]
+      --verbose
+  -h, --help                 Print help
+  -V, --version              Print version
+```
 
 ## Supported File Types
 
@@ -30,6 +41,7 @@ Command line flow chart follower/runner and logger.
   ```
 - OATS .oats
   - Simple but expressive format with Or And Then Sequences (OATS)
+  - [Blog post about OATS](https://www.martelle.dev/2025-07-01_on_notes_and_todo_lists.html)
   - Example:
   ```OATS
   ~ Do this first
